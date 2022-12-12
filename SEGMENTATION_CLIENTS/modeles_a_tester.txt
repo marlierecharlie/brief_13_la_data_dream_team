@@ -1,0 +1,4 @@
+- k-means
+- affinity propagation
+- bisecting k-means
+- DBSCAN
