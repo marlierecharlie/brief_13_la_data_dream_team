@@ -1,9 +1,11 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, Lasso, Ridge, ElasticNet
 from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import GradientBoostingRegressor
 
 
 # To run this app you must write in your terminal the following code : "streamlit run appli.py"
@@ -13,20 +15,13 @@ from sklearn.preprocessing import StandardScaler
 dataframe = pd.read_csv('df')
 
 # Split datas
+
 X = dataframe[['distance', 'price', 'volume_cm3']]
 y = dataframe['freight_value']
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
 # Création du model
 
-linear = LinearRegression()
-linear.fit(X_train, y_train)
 
-lasso = Lasso(alpha=0.1)
-lasso.fit(X_train, y_train)
-
-y_pred = linear.predict(X_test)
 # Apllication
 
 st.set_page_config(
@@ -53,7 +48,19 @@ with st.sidebar:
                                          'arbres de décision', 'gradient boosting'])
 
     slider = st.slider(
-        'Pourcentage de données utilisé pour prédire', 0, 100, 25)
+        'Pourcentage de données utilisé pour tester', 0, 100, 20)
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=slider/100)
+
+    st.write(slider/100)
+
+    if m_dropdown == "regression linéaire":
+        st.markdown("<h1 style='color: white;text-align: center; margin-bottom: 60px'>Type de regression </h1>",
+                    unsafe_allow_html=True)
+
+        r_dropdown = st.selectbox('modèle', ['Simple',
+                                             'Lasso', 'Ridge', 'Elastic'])
 
 # menu
 
@@ -81,9 +88,52 @@ with container:
         df = pd.DataFrame({'distance': [feature1], 'price': [
                           feature2], 'volume_cm3': [feature3]})
 
+        scaler = StandardScaler()
+        scaled = scaler.fit_transform(df[['distance', 'price', 'volume_cm3']])
+
         if button:
-            pred = lasso.predict(df)
-            st.write('les frais de transport sont estimés à :', pred)
+            try:
+                if m_dropdown == "gradient boosting":
+                    gradient = GradientBoostingRegressor()
+                    gradient.fit(X_train, y_train)
+                    pred = gradient.predict(scaled)
+                    st.write("r2_score :", gradient.score(X_test, y_test))
+                    st.write(pred)
+
+                if r_dropdown == "Simple":
+                    linear = LinearRegression()
+                    linear.fit(X_train, y_train)
+                    pred = linear.predict(scaled)
+                    st.write(pred)
+                    st.write("r2_score :", linear.score(X_test, y_test))
+                    st.markdown(
+                        "<p style='color: red'>Nous pouvons apercevoir que le résultat n'est pas représentatif des données rentrées</>", unsafe_allow_html=True)
+
+                elif r_dropdown == "Lasso":
+                    lasso = Lasso(alpha=0.1)
+                    lasso.fit(X_train, y_train)
+                    pred = lasso.predict(scaled)
+                    st.write(pred)
+                    st.markdown(
+                        "<p style='color: red'>Nous pouvons apercevoir que le résultat n'est pas représentatif des données rentrées</>", unsafe_allow_html=True)
+
+                elif r_dropdown == "Ridge":
+                    ridge = Ridge(alpha=1)
+                    ridge.fit(X_train, y_train)
+                    pred = ridge.predict(scaled)
+                    st.write(pred)
+                    st.markdown(
+                        "<p style='color: red'>Nous pouvons apercevoir que le résultat n'est pas représentatif des données rentrées</>", unsafe_allow_html=True)
+
+                elif r_dropdown == 'Elastic':
+                    elastic = ElasticNet()
+                    elastic.fit(X_train, y_train)
+                    pred = elastic.predict(scaled)
+                    st.write(pred)
+                    st.markdown(
+                        "<p style='color: red'>Nous pouvons apercevoir que le résultat n'est pas représentatif des données rentrées</>", unsafe_allow_html=True)
+            except:
+                pass
 
     with col2:
         st.subheader('délai de livraison')
