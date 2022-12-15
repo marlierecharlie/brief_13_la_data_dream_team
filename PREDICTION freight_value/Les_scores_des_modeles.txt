@@ -1,0 +1,91 @@
+product_weight_g	product_length_cm	product_height_cm	product_width_cm
+volume_cm3
+
+octobre:712.40
+septembre:118,73
+
+scaler = StandardScaler()
+scaled = scaler.fit_transform(df[cols])
+
+pca = PCA(n_components= 1)
+reduced = pca.fit_transform(scaled)
+pca_df = pd.DataFrame(reduced, columns= ['component_1'])
+pca_df.head()
+
+tmp = pd.concat([pca_df,df.freight_value], axis=1)
+
+plt.figure(figsize= (12,8))
+sns.lmplot(
+    data=tmp.sample(frac=0.15, random_state= 5),
+    x= 'component_1',
+    y= 'freight_value',
+    legend= True,
+    height= 8,
+    aspect= 2
+)
+
+
+REGRESSION LINEAR
+scaled = pd.DataFrame(scaled, columns = cols)
+
+X = scaled
+y = df.freight_value
+X_train, X_test,y_train,y_test = train_test_split(X,y,test_size=0.2)
+linear = LinearRegression()
+linear.fit(X_train,y_train)
+y_pred = linear.predict(X_test)
+# model accuracy
+print("Test R2: {}".format(linear.score(X_test,y_test)))
+pred = pd.DataFrame(y_pred)
+
+sns.regplot(x=y_test,y=y_pred,ci=None,color ='red');
+plt.scatter(y_test,y_pred, color='blue')
+plt.title('Freight_value per predict_value')
+plt.xlabel('freight_value');
+plt.ylabel('predicted');
+
+pred_df=pd.DataFrame({'Actual Value':y_test,'Predicted Value':y_pred,'Difference':y_test-y_pred})
+pred_df.head()
+
+for col,coef in zip(X.columns,linear.coef_):
+    print("{}: {}".format(col,coef))
+
+Test R2: 0.5566917320708583
+distance: 7.740867350132683
+volume_cm3: 9.753553251465682
+price: 4.167561846314469
+
+
+LASSO
+lasso = Lasso(alpha=0.1)
+lasso.fit(X_train,y_train)
+
+print("Train R2: {}".format(lasso.score(X_train,y_train)))
+print("Test R2: {}\n".format(lasso.score(X_test,y_test)))
+for col,coef in zip(X.columns,lasso.coef_):
+    print("{}: {}".format(col,coef))
+
+Train R2: 0.5568527425820141
+Test R2: 0.5564501859726536
+
+distance: 7.645189370029774
+volume_cm3: 9.67172245213255
+price: 4.1041207192615
+
+ELASTICNET
+
+elastic = ElasticNet(alpha=1.0, l1_ratio=0.5)
+elastic.fit(X_train,y_train)
+
+print("Train R2: {}".format(elastic.score(X_train,y_train)))
+print("Test R2: {}\n".format(elastic.score(X_test,y_test)))
+
+for col,coef in zip(X.columns,elastic.coef_):
+    print("{}: {}".format(col,coef))
+
+Train R2: 0.4937985142158109
+Test R2: 0.48549933915238375
+
+distance: 4.826042425503795
+volume_cm3: 6.278496295020317
+price: 3.3962610467111456
