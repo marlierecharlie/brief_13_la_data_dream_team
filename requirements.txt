@@ -1,0 +1,14 @@
+pandas
+numpy
+scikit-learn
+streamlit
+geopy
+matplotlib
+seaborn
+ipywidgets
+scipy
+plotnine
+haversine
+folium
+plotly
+yellowbrick
