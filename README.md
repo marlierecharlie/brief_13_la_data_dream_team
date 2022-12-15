@@ -1,5 +1,3 @@
-Vous êtes une équipe de consultants pour Olist, une entreprise brésilienne qui propose une solution de vente sur les marketplaces en ligne. Le but de votre mission est de réaliser une segmentation clients et de  faire une prédiction sur les frais de livraison et les délais de livraison des articles. Le but final est d'avoir une application web avec une interface de restitution en local et une base de données qui s'alimente à chaque utilisation de l'application.
-
 Voici le résultat du projet qui nous a été commissionné par Olist, une entreprise brésilienne qui propose une solution de vente sur les marketplaces en ligne. Le but de notre mission était de réaliser une segmentation clients et de  faire une prédiction sur les frais de livraison et les délais de livraison des articles. Le but final est d'avoir une application web avec une interface de restitution en local et une base de données qui s'alimente à chaque utilisation de l'application.
 
 ## Procédure d'installation
